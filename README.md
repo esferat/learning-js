@@ -1,7 +1,6 @@
 # learning-js
 
-Трекер программы обучения **«Fullstack Middle+/Senior (NodeJS, NestJS, NextJS)»** — интерактивная
-оболочка над документом «Программа обучения Backend Middle+ (NodeJS, NestJS, NextJS).docx»
+Трекер программы обучения **«Fullstack Middle+/Senior (NodeJS, NestJS, NextJS)»**
 (672 часа, 18 недель, редакция 1.4).
 
 Весь контент программы — модули, теория, чеклисты, план по неделям, банк интервью-вопросов —
@@ -63,27 +62,6 @@ docker run -d --rm -p 8080:80 --name learning-js learning-js
 - `/assets/*` кешируется на год (`immutable`, хеши в именах файлов), `index.html` — без кеша;
 - gzip для html/css/js/json/svg;
 - `HEALTHCHECK` по корню.
-
-## Контент-пайплайн
-
-Программа не переносится в код руками — она извлекается из исходного документа:
-
-```
-Программа обучения....docx
-        │  tools/extract-docx.ps1   (PowerShell + WordprocessingML)
-        ▼
-src/data/chapters/ch01.json … ch20.json   — блоки документа
-src/data/chapters/index.json              — оглавление
-        │  tools/build-meta.mjs           (структура для прогресса)
-        ▼
-src/data/meta.json                        — единицы прогресса, счётчики
-```
-
-Формат блока: `h2/h3`, `p` (с жирным/кодом), `ul/ol`, `code`, `table`.
-Единица прогресса — раздел h2, а внутри длинных разделов теории — подраздел h3.
-
-Чтобы обновить контент после правки .docx: положите документ в корень проекта
-(рядом с `learning-js`) и выполните `pnpm extract`.
 
 ## Структура
 
