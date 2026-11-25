@@ -1,28 +1,33 @@
 import { Button, Card, Col, Popconfirm, Progress, Row, Space, Statistic, Tag, Typography } from 'antd';
 import { FireOutlined, ReloadOutlined, RocketOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { meta } from '../data/content';
-import { MODULES, PROGRAM, TOTAL_HOURS } from '../data/curriculum';
+import { chapterMeta, meta } from '../data/content';
 import { countDone, doneHours, moduleProgress, moduleUnits, overallProgress } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 
 export function DashboardPage() {
+  const { def, ns, href } = useProgram();
   const { state, resetAll } = useProgress();
   const navigate = useNavigate();
 
-  const overall = overallProgress(meta, state);
-  const hours = doneHours(meta, state);
-  const moduleKeys = MODULES.flatMap((m) => moduleUnits(meta, m));
+  const overall = overallProgress(meta, state, def.modules, ns);
+  const hours = doneHours(meta, state, def.modules, ns);
+  const moduleKeys = def.modules.flatMap((m) => moduleUnits(meta, m, ns));
   const unitsDone = moduleKeys.filter((k) => state.units[k]).length;
-  const qaDone = countDone(state.qa);
-  const checkDone = countDone(state.checklist);
-  const weeksDone = countDone(state.weeks);
+  const qaDone = countDone(state.qa, ns);
+  const checkDone = countDone(state.checklist, ns);
+  const weeksDone = countDone(state.weeks, ns);
+
+  const interviewTotal = chapterMeta(def.interviewChapter)?.questions ?? 0;
+  const checklistTotal = chapterMeta(def.checklistChapter)?.checklistItems ?? 0;
+  const weeksTotal = chapterMeta(def.planChapter)?.weeks ?? 0;
 
   const current =
-    MODULES.find((m) => {
-      const p = moduleProgress(meta, m, state);
+    def.modules.find((m) => {
+      const p = moduleProgress(meta, m, state, ns);
       return p > 0 && p < 1;
-    }) ?? MODULES.find((m) => moduleProgress(meta, m, state) < 1);
+    }) ?? def.modules.find((m) => moduleProgress(meta, m, state, ns) < 1);
 
   const percent = Math.round(overall * 100);
 
@@ -32,15 +37,15 @@ export function DashboardPage() {
         <div className="qa-category-head">
           <div>
             <Typography.Title level={4} style={{ marginBottom: 4 }}>
-              {PROGRAM.title}
+              {def.info.title}
             </Typography.Title>
-            <Typography.Text type="secondary">{PROGRAM.subtitle}</Typography.Text>
+            <Typography.Text type="secondary">{def.info.subtitle}</Typography.Text>
             <div style={{ marginTop: 8 }}>
               <Space size={4} wrap>
-                <Tag color="blue">{PROGRAM.totalHours} часов</Tag>
-                <Tag color="geekblue">{PROGRAM.totalWeeks} недель</Tag>
-                <Tag>{PROGRAM.intensity}</Tag>
-                <Tag>{PROGRAM.revision}</Tag>
+                <Tag color="blue">{def.info.totalHours} часов</Tag>
+                <Tag color="geekblue">{def.info.totalWeeks} недель</Tag>
+                <Tag>{def.info.intensity}</Tag>
+                <Tag>{def.info.revision}</Tag>
               </Space>
             </div>
           </div>
@@ -49,12 +54,12 @@ export function DashboardPage() {
               <Button
                 type="primary"
                 icon={<RocketOutlined />}
-                onClick={() => navigate(`/modules/${current.id}`)}
+                onClick={() => navigate(href(`/modules/${current.id}`))}
               >
                 Продолжить: модуль {current.id + 1}
               </Button>
             )}
-            <Button icon={<FireOutlined />} onClick={() => navigate('/interview')}>
+            <Button icon={<FireOutlined />} onClick={() => navigate(href('/interview'))}>
               Интервью-вопросы
             </Button>
           </Space>
@@ -67,40 +72,34 @@ export function DashboardPage() {
           <Statistic title="Прогресс программы" value={percent} suffix="%" />
         </Card>
         <Card>
-          <Statistic title="Часы" value={hours} suffix={`/ ${TOTAL_HOURS} ч`} />
+          <Statistic title="Часы" value={hours} suffix={`/ ${def.info.totalHours} ч`} />
         </Card>
         <Card>
           <Statistic title="Темы закрыто" value={unitsDone} suffix={`/ ${moduleKeys.length}`} />
         </Card>
         <Card>
-          <Statistic title="Интервью выучено" value={qaDone} suffix={`/ ${meta.totals.questions}`} />
+          <Statistic title="Интервью выучено" value={qaDone} suffix={`/ ${interviewTotal}`} />
         </Card>
         <Card>
-          <Statistic
-            title="Чеклисты пройдены"
-            value={checkDone}
-            suffix={`/ ${meta.totals.checklistItems}`}
-          />
+          <Statistic title="Чеклисты пройдены" value={checkDone} suffix={`/ ${checklistTotal}`} />
         </Card>
         <Card>
-          <Statistic title="Недель плана" value={weeksDone} suffix={`/ ${meta.totals.weeks}`} />
+          <Statistic title="Недель плана" value={weeksDone} suffix={`/ ${weeksTotal}`} />
         </Card>
       </div>
 
       <Card
         title="Прогресс по модулям"
         extra={
-          <Link to="/modules">
-            все модули →
-          </Link>
+          <Link to={href('/modules')}>все модули →</Link>
         }
       >
-        {MODULES.map((m) => {
-          const p = moduleProgress(meta, m, state);
+        {def.modules.map((m) => {
+          const p = moduleProgress(meta, m, state, ns);
           const pct = Math.round(p * 100);
           return (
             <div key={m.id} className="module-row">
-              <Link to={`/modules/${m.id}`} className="module-row-title">
+              <Link to={href(`/modules/${m.id}`)} className="module-row-title">
                 Модуль {m.id + 1}. {m.title}
               </Link>
               <Progress percent={pct} status={pct === 100 ? 'success' : 'active'} />
@@ -113,17 +112,17 @@ export function DashboardPage() {
       <Card title="Ориентиры">
         <Row gutter={[16, 12]}>
           <Col xs={24} md={8}>
-            <Button block onClick={() => navigate('/plan')}>
-              План на 18 недель
+            <Button block onClick={() => navigate(href('/plan'))}>
+              План по неделям
             </Button>
           </Col>
           <Col xs={24} md={8}>
-            <Button block onClick={() => navigate('/checklists')}>
+            <Button block onClick={() => navigate(href('/checklists'))}>
               Чеклисты самопроверки
             </Button>
           </Col>
           <Col xs={24} md={8}>
-            <Button block onClick={() => navigate('/program')}>
+            <Button block onClick={() => navigate(href('/program'))}>
               О программе и входных требованиях
             </Button>
           </Col>

@@ -230,3 +230,194 @@ export const MODULE_SHORT: Record<number, string> = {
   10: 'Подготовка к интервью',
   11: 'AI: промпты и агенты',
 };
+
+// ---------------------------------------------------------------------------
+// Java Spring Backend — второе направление (content/java-spring.json → гл. 21–38)
+// ---------------------------------------------------------------------------
+
+export const JAVA_PROGRAM = {
+  title: 'Программа обучения Java Spring Backend',
+  subtitle: 'Java · Spring Boot · JPA · Security · Kafka · тесты · Docker',
+  totalHours: 600,
+  totalWeeks: 15,
+  intensity: '6–8 часов в день',
+  revision: 'Редакция 1.0',
+  interviewQuestions: 35,
+} as const;
+
+export const JAVA_MODULES: ModuleInfo[] = [
+  {
+    id: 0,
+    title: 'Java Core: типы, ООП, коллекции',
+    chapterNums: [23],
+    hours: { theory: 28, practice: 16, assignment: 4, total: 48 },
+    daysAt9: 5.3,
+    assignment: 'Тестовое задание «Утилиты и структуры данных» (4 ч)',
+    stack: 'Java: типы, ООП, equals/hashCode, коллекции',
+  },
+  {
+    id: 1,
+    title: 'Продвинутое Java: стримы, Optional, record',
+    chapterNums: [24],
+    hours: { theory: 24, practice: 12, assignment: 4, total: 40 },
+    daysAt9: 4.4,
+    assignment: 'Тестовое задание «Обработка заказов стримами» (4 ч)',
+    stack: 'Лямбды, Optional, Stream API, record/sealed',
+  },
+  {
+    id: 2,
+    title: 'Параллелизм и JVM',
+    chapterNums: [25],
+    hours: { theory: 32, practice: 24, assignment: 8, total: 64 },
+    daysAt9: 7.1,
+    assignment: 'Тестовое задание «Потокобезопасный банк-счёт» (8 ч)',
+    stack: 'Синхронизация, пулы, гонки, GC, диагностика JVM',
+  },
+  {
+    id: 3,
+    title: 'Spring Boot и IoC',
+    chapterNums: [26],
+    hours: { theory: 28, practice: 14, assignment: 6, total: 48 },
+    daysAt9: 5.3,
+    assignment: 'Тестовое задание «Скелет сервиса с конфигурацией» (6 ч)',
+    stack: 'IoC, жизненный цикл бинов, конфигурация, профили, actuator',
+  },
+  {
+    id: 4,
+    title: 'Веб-слой Spring: REST, валидация, ошибки',
+    chapterNums: [27],
+    hours: { theory: 24, practice: 18, assignment: 6, total: 48 },
+    daysAt9: 5.3,
+    assignment: 'Тестовое задание «API таск-трекера» (6 ч)',
+    stack: 'REST, DTO-валидация, advice, correlation id, CORS',
+  },
+  {
+    id: 5,
+    title: 'Spring Data JPA и БД',
+    chapterNums: [28],
+    hours: { theory: 28, practice: 20, assignment: 8, total: 56 },
+    daysAt9: 6.2,
+    assignment: 'Тестовое задание «Банк-счёт на JPA» (8 ч)',
+    stack: 'JPA, N+1, транзакции Spring, миграции, EXPLAIN',
+  },
+  {
+    id: 6,
+    title: 'Spring Security: JWT и роли',
+    chapterNums: [29],
+    hours: { theory: 24, practice: 10, assignment: 6, total: 40 },
+    daysAt9: 4.4,
+    assignment: 'Тестовое задание «Вход с ролями и токенами» (6 ч)',
+    stack: 'Аутентификация, JWT-конвейер, роли, CSRF/CORS, секреты',
+  },
+  {
+    id: 7,
+    title: 'Тестирование: JUnit, Mockito, Testcontainers',
+    chapterNums: [30],
+    hours: { theory: 20, practice: 22, assignment: 6, total: 48 },
+    daysAt9: 5.3,
+    assignment: 'Тестовое задание «Тестовое покрытие сервиса» (6 ч)',
+    stack: 'JUnit 5, Mockito, слои тестов, Testcontainers, контракты',
+  },
+  {
+    id: 8,
+    title: 'Микросервисы и интеграции',
+    chapterNums: [31],
+    hours: { theory: 32, practice: 24, assignment: 8, total: 64 },
+    daysAt9: 7.1,
+    assignment: 'Тестовое задание «Событийная платформа заказов» (8 ч)',
+    stack: 'Kafka, Redis-кеш, retry/circuit breaker, идемпотентность',
+  },
+  {
+    id: 9,
+    title: 'Эксплуатация: Docker, CI/CD, JVM на проде',
+    chapterNums: [32],
+    hours: { theory: 24, practice: 18, assignment: 6, total: 48 },
+    daysAt9: 5.3,
+    assignment: 'Тестовое задание «Прод-готовность сервиса» (6 ч)',
+    stack: 'Docker для JVM, CI/CD, Micrometer/Prometheus, диагностика',
+  },
+  {
+    id: 10,
+    title: 'Капстоун: платформа заказов',
+    chapterNums: [33],
+    hours: { theory: 8, practice: 32, assignment: 16, total: 56 },
+    daysAt9: 6.2,
+    assignment: 'Капстоун «Платформа заказов» (56 ч)',
+    stack: 'Spring Boot, JPA, Kafka, Security, Docker, CI',
+  },
+  {
+    id: 11,
+    title: 'Подготовка к интервью',
+    chapterNums: [34],
+    hours: { theory: 16, practice: 16, assignment: 8, total: 40 },
+    daysAt9: 4.4,
+    assignment: 'Банк вопросов раздела 17, мок-интервью, портфолио',
+    stack: 'Код-раунд, Java/Spring-блок, system design, STAR',
+  },
+];
+
+export const JAVA_MODULE_SHORT: Record<number, string> = {
+  0: 'Java Core',
+  1: 'Продвинутое Java',
+  2: 'Параллелизм и JVM',
+  3: 'Spring Boot и IoC',
+  4: 'Веб-слой Spring',
+  5: 'Spring Data JPA',
+  6: 'Spring Security',
+  7: 'Тестирование',
+  8: 'Микросервисы',
+  9: 'Эксплуатация',
+  10: 'Капстоун',
+  11: 'Подготовка к интервью',
+};
+
+// ---------------------------------------------------------------------------
+// Реестр направлений: ключ = сегмент маршрута (/fs, /java)
+// ---------------------------------------------------------------------------
+
+export interface ProgramDef {
+  id: string;
+  path: string;
+  /** Подпись в логотипе сайдбара. */
+  short: string;
+  switchLabel: string;
+  info: typeof PROGRAM | typeof JAVA_PROGRAM;
+  modules: ModuleInfo[];
+  shortTitles: Record<number, string>;
+  introChapters: number[];
+  checklistChapter: number;
+  planChapter: number;
+  interviewChapter: number;
+  resourcesChapter: number;
+}
+
+export const PROGRAMS: Record<string, ProgramDef> = {
+  fs: {
+    id: 'fs',
+    path: '/fs',
+    short: 'Fullstack Middle+/Senior',
+    switchLabel: 'Fullstack',
+    info: PROGRAM,
+    modules: MODULES,
+    shortTitles: MODULE_SHORT,
+    introChapters: [1, 2],
+    checklistChapter: 17,
+    planChapter: 18,
+    interviewChapter: 19,
+    resourcesChapter: 20,
+  },
+  java: {
+    id: 'java',
+    path: '/java',
+    short: 'Java Spring Backend',
+    switchLabel: 'Java Spring',
+    info: JAVA_PROGRAM,
+    modules: JAVA_MODULES,
+    shortTitles: JAVA_MODULE_SHORT,
+    introChapters: [21, 22],
+    checklistChapter: 35,
+    planChapter: 36,
+    interviewChapter: 37,
+    resourcesChapter: 38,
+  },
+};

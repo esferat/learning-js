@@ -3,9 +3,9 @@ import type { ColumnsType } from 'antd/es/table/interface';
 import { useNavigate, Link } from 'react-router-dom';
 import { meta } from '../data/content';
 import type { ModuleInfo } from '../data/curriculum';
-import { MODULES } from '../data/curriculum';
 import { moduleProgress } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 
 interface Row extends ModuleInfo {
   key: number;
@@ -20,12 +20,13 @@ function status(pct: number): { color: string; label: string } {
 
 export function ModulesPage() {
   const { state } = useProgress();
+  const { def, ns, href } = useProgram();
   const navigate = useNavigate();
 
-  const rows: Row[] = MODULES.map((m) => ({
+  const rows: Row[] = def.modules.map((m) => ({
     ...m,
     key: m.id,
-    progress: Math.round(moduleProgress(meta, m, state) * 100),
+    progress: Math.round(moduleProgress(meta, m, state, ns) * 100),
   }));
 
   const columns: ColumnsType<Row> = [
@@ -41,7 +42,7 @@ export function ModulesPage() {
       key: 'title',
       render: (_, row) => (
         <div>
-          <Link to={`/modules/${row.id}`} onClick={(e) => e.stopPropagation()}>
+          <Link to={href(`/modules/${row.id}`)} onClick={(e) => e.stopPropagation()}>
             {row.title}
           </Link>
           <div className="muted" style={{ fontSize: 12 }}>
@@ -90,7 +91,7 @@ export function ModulesPage() {
       title="Модули программы"
       extra={
         <Typography.Text type="secondary">
-          {MODULES.reduce((s, m) => s + m.hours.total, 0)} ч · {MODULES.length} модулей
+          {def.modules.reduce((s, m) => s + m.hours.total, 0)} ч · {def.modules.length} модулей
         </Typography.Text>
       }
     >
@@ -100,7 +101,7 @@ export function ModulesPage() {
         pagination={false}
         scroll={{ x: 940 }}
         onRow={(row) => ({
-          onClick: () => navigate(`/modules/${row.id}`),
+          onClick: () => navigate(href(`/modules/${row.id}`)),
           style: { cursor: 'pointer' },
         })}
       />

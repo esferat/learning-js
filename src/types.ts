@@ -39,6 +39,11 @@ export interface ChapterMeta {
   title: string;
   blocks: number;
   units: Unit[];
+  /** Счётчики главы (для дашборда направления): вопросы/чек-лист/недели. */
+  questions?: number;
+  checklistItems?: number;
+  checklistSections?: number;
+  weeks?: number;
 }
 
 export interface Meta {

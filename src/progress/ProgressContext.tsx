@@ -18,16 +18,28 @@ const STORAGE_KEY = 'learning-js:progress:v1';
 
 const EMPTY: ProgressState = { units: {}, checklist: {}, weeks: {}, qa: {} };
 
+/** Пространства имён направлений. Старые ключи без префикса мигрируются в 'fs:'. */
+const NAMESPACES = ['fs:', 'java:'];
+
+function withNamespace(record: Record<string, boolean>): Record<string, boolean> {
+  const out: Record<string, boolean> = {};
+  for (const [key, value] of Object.entries(record)) {
+    const ns = NAMESPACES.some((p) => key.startsWith(p)) ? key : `fs:${key}`;
+    out[ns] = value;
+  }
+  return out;
+}
+
 function load(): ProgressState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY;
     const parsed = JSON.parse(raw) as Partial<ProgressState>;
     return {
-      units: parsed.units ?? {},
-      checklist: parsed.checklist ?? {},
-      weeks: parsed.weeks ?? {},
-      qa: parsed.qa ?? {},
+      units: withNamespace(parsed.units ?? {}),
+      checklist: withNamespace(parsed.checklist ?? {}),
+      weeks: withNamespace(parsed.weeks ?? {}),
+      qa: withNamespace(parsed.qa ?? {}),
     };
   } catch {
     return EMPTY;

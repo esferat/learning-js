@@ -3,15 +3,17 @@ import { SearchOutlined } from '@ant-design/icons';
 import { useMemo, useState } from 'react';
 import { parseInterview } from '../data/derive';
 import type { InterviewCategory, InterviewQuestion } from '../data/derive';
-import { meta } from '../data/content';
+import { chapterMeta } from '../data/content';
 import { useChapters } from '../data/useChapters';
 import { countDone } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 import { BlockList } from '../components/BlockList';
 
 function QuestionItem({ question, category }: { question: InterviewQuestion; category?: string }) {
   const { isDone, toggle } = useProgress();
-  const key = `q:${question.key}`;
+  const { ns } = useProgram();
+  const key = `${ns}q:${question.key}`;
   const checked = isDone('qa', key);
 
   return (
@@ -56,7 +58,8 @@ function QuestionItem({ question, category }: { question: InterviewQuestion; cat
 
 function CategoryPanel({ category }: { category: InterviewCategory }) {
   const { state } = useProgress();
-  const learned = category.questions.filter((q) => state.qa[`q:${q.key}`]).length;
+  const { ns } = useProgram();
+  const learned = category.questions.filter((q) => state.qa[`${ns}q:${q.key}`]).length;
   return (
     <div>
       <div className="qa-category-head">
@@ -72,13 +75,17 @@ function CategoryPanel({ category }: { category: InterviewCategory }) {
 }
 
 export function InterviewPage() {
-  const { chapters, error } = useChapters([19]);
+  const { def, ns } = useProgram();
+  const { chapters, error } = useChapters([def.interviewChapter]);
   const { state } = useProgress();
   const [query, setQuery] = useState('');
 
   const parsed = useMemo(() => (chapters ? parseInterview(chapters[0].blocks) : null), [chapters]);
-  const learned = countDone(state.qa);
-  const total = meta.totals.questions;
+  const learned = countDone(state.qa, ns);
+  const total =
+    parsed?.categories.reduce((s, c) => s + c.questions.length, 0) ??
+    chapterMeta(def.interviewChapter)?.questions ??
+    0;
   const pct = total > 0 ? Math.round((learned / total) * 100) : 0;
 
   const q = query.trim().toLowerCase();
@@ -167,7 +174,7 @@ export function InterviewPage() {
                 items={parsed.categories.map((cat) => ({
                   key: cat.id,
                   label: `${cat.title.replace(/^\d+\.\d+\.\s*/, '')} (${
-                    cat.questions.filter((x) => state.qa[`q:${x.key}`]).length
+                    cat.questions.filter((x) => state.qa[`${ns}q:${x.key}`]).length
                   }/${cat.questions.length})`,
                   children: <CategoryPanel category={cat} />,
                 }))}

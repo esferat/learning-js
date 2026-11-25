@@ -9,7 +9,9 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "extract": "powershell -ExecutionPolicy Bypass -File tools/extract-docx.ps1 && node tools/build-meta.mjs"
+    "extract": "powershell -ExecutionPolicy Bypass -File tools/extract-docx.ps1 && node tools/build-meta.mjs",
+    "docx": "node tools/build-docx-v2.mjs",
+    "docx:programs": "node tools/build-docx-programs.mjs"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.4",
@@ -23,6 +25,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "docx": "^9.15.4",
     "typescript": "^7.0.2",
     "vite": "^8.3.8"
   }

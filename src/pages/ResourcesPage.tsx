@@ -1,10 +1,12 @@
 import { Card, Result, Space, Spin, Typography } from 'antd';
 import { useChapters } from '../data/useChapters';
 import { BlockList } from '../components/BlockList';
+import { useProgram } from '../ProgramContext';
 
-/** Chapter 20: documentation, tools and reading order. */
+/** Полезные ресурсы текущего направления. */
 export function ResourcesPage() {
-  const { chapters, error } = useChapters([20]);
+  const { def } = useProgram();
+  const { chapters, error } = useChapters([def.resourcesChapter]);
 
   return (
     <Space orientation="vertical" size={16} style={{ width: '100%' }}>

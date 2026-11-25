@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { chapterMeta } from '../data/content';
 import { useChapters } from '../data/useChapters';
 import { UnitizedContent } from '../components/UnitizedContent';
+import { useProgram } from '../ProgramContext';
 
-/** Chapters 1–2: goal, entry requirements, format, effort and the project map. */
+/** Введение и структура программы (главы «О программе» текущего направления). */
 export function ProgramPage() {
-  const { chapters, error } = useChapters([1, 2]);
+  const { def, href } = useProgram();
+  const { chapters, error } = useChapters(def.introChapters);
 
   return (
     <Space orientation="vertical" size={16} style={{ width: '100%' }}>
@@ -40,8 +42,10 @@ export function ProgramPage() {
 
       <Card>
         <Typography.Text type="secondary">
-          Дальше: <Link to="/plan">план по неделям</Link> · <Link to="/checklists">чеклисты</Link> ·{' '}
-          <Link to="/interview">вопросы интервью</Link> · <Link to="/resources">ресурсы</Link>
+          Дальше: <Link to={href('/plan')}>план по неделям</Link> ·{' '}
+          <Link to={href('/checklists')}>чеклисты</Link> ·{' '}
+          <Link to={href('/interview')}>вопросы интервью</Link> ·{' '}
+          <Link to={href('/resources')}>ресурсы</Link>
         </Typography.Text>
       </Card>
     </Space>

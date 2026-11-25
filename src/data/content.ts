@@ -21,13 +21,18 @@ const supplement = supplementJson as unknown as Record<string, SupplementTopic[]
  * The document numbers modules from 0; the app shows them from 1.
  * Titles and unit names are shifted here so menus, cards and the topic
  * select always match the rendered content (see src/lib/renumber.ts).
+ * Java chapters (num >= 21) are authored 1-based and are NOT renumbered.
  */
 export const meta: Meta = {
   ...raw,
   chapters: raw.chapters.map((c) => ({
     ...c,
-    title: renumberText(c.title, c.num),
-    units: c.units.map((u) => ({ ...u, t: renumberText(u.t, c.num) })),
+    ...(c.num <= 20
+      ? {
+          title: renumberText(c.title, c.num),
+          units: c.units.map((u) => ({ ...u, t: renumberText(u.t, c.num) })),
+        }
+      : {}),
   })),
 };
 
@@ -86,6 +91,7 @@ export async function loadChapter(num: number): Promise<Chapter> {
   if (!loader) throw new Error(`Глава ${num} не найдена`);
   const mod = (await loader()) as { default: Chapter };
   const chapter = mergeSupplement(mod.default);
+  if (num > 20) return chapter; // Java program: content is final as authored
   return {
     ...chapter,
     title: renumberText(chapter.title, chapter.num),

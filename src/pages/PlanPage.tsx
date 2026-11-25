@@ -1,15 +1,17 @@
 import { Card, Checkbox, Progress, Result, Space, Spin, Typography } from 'antd';
 import { useMemo } from 'react';
-import { meta } from '../data/content';
+import { chapterMeta } from '../data/content';
 import { isWeeksTable, parseWeeks } from '../data/derive';
 import { useChapters } from '../data/useChapters';
 import { countDone } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 import { BlockList } from '../components/BlockList';
 import type { Block } from '../types';
 
 function WeeksTable({ blocks }: { blocks: Block[] }) {
   const { isDone, toggle } = useProgress();
+  const { ns } = useProgram();
   const weeks = useMemo(() => parseWeeks(blocks), [blocks]);
 
   return (
@@ -24,7 +26,7 @@ function WeeksTable({ blocks }: { blocks: Block[] }) {
         </thead>
         <tbody>
           {weeks.map((w) => {
-            const key = `w:${w.n}`;
+            const key = `${ns}w:${w.n}`;
             const checked = isDone('weeks', key);
             return (
               <tr key={w.n} className={checked ? 'row-done' : undefined}>
@@ -46,12 +48,13 @@ function WeeksTable({ blocks }: { blocks: Block[] }) {
 }
 
 export function PlanPage() {
-  const { chapters, error } = useChapters([18]);
+  const { def, ns } = useProgram();
+  const { chapters, error } = useChapters([def.planChapter]);
   const { state } = useProgress();
 
   const blocks = chapters?.[0]?.blocks ?? [];
-  const done = countDone(state.weeks);
-  const total = meta.totals.weeks;
+  const done = countDone(state.weeks, ns);
+  const total = chapterMeta(def.planChapter)?.weeks ?? 0;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
   return (

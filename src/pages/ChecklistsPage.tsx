@@ -1,14 +1,16 @@
 import { Card, Checkbox, Progress, Result, Space, Spin, Typography } from 'antd';
 import { useMemo } from 'react';
-import { meta } from '../data/content';
+import { chapterMeta } from '../data/content';
 import { parseChecklists } from '../data/derive';
 import { useChapters } from '../data/useChapters';
 import { countDone } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 import { BlockList } from '../components/BlockList';
 
 export function ChecklistsPage() {
-  const { chapters, error } = useChapters([17]);
+  const { def, ns } = useProgram();
+  const { chapters, error } = useChapters([def.checklistChapter]);
   const { state, isDone, toggle } = useProgress();
 
   const parsed = useMemo(
@@ -16,8 +18,11 @@ export function ChecklistsPage() {
     [chapters],
   );
 
-  const done = countDone(state.checklist);
-  const total = meta.totals.checklistItems;
+  const done = countDone(state.checklist, ns);
+  const total =
+    chapterMeta(def.checklistChapter)?.checklistItems ??
+    parsed?.sections.reduce((s, sec) => s + sec.items.length, 0) ??
+    0;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
   return (
@@ -45,11 +50,14 @@ export function ChecklistsPage() {
       )}
 
       {parsed && (
-        <Card className="chapter-block" title="17. Контрольные точки и чеклисты">
+        <Card
+          className="chapter-block"
+          title={chapterMeta(def.checklistChapter)?.title ?? 'Контрольные точки и чеклисты'}
+        >
           <BlockList blocks={parsed.intro} />
           {parsed.sections.map((section) => {
             const sectionDone = section.items.filter((_, i) =>
-              isDone('checklist', `cl:${section.id}:${i}`),
+              isDone('checklist', `${ns}cl:${section.id}:${i}`),
             ).length;
             return (
               <div key={section.id} style={{ marginTop: 20 }}>
@@ -62,7 +70,7 @@ export function ChecklistsPage() {
                   </Typography.Text>
                 </div>
                 {section.items.map((item, i) => {
-                  const key = `cl:${section.id}:${i}`;
+                  const key = `${ns}cl:${section.id}:${i}`;
                   const checked = isDone('checklist', key);
                   return (
                     <div key={key} className={checked ? 'check-row checked' : 'check-row'}>

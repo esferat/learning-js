@@ -3,21 +3,25 @@ import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useMemo } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { chapterMeta, meta } from '../data/content';
-import { getModule } from '../data/curriculum';
 import { useChapters } from '../data/useChapters';
 import { moduleTopics } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 import { SingleUnit } from '../components/UnitizedContent';
 
 export function ModulePage() {
   const params = useParams();
   const navigate = useNavigate();
   const id = Number(params.id);
-  const module = Number.isInteger(id) ? getModule(id) : undefined;
+  const { def, ns, href } = useProgram();
+  const module = Number.isInteger(id) ? def.modules.find((m) => m.id === id) : undefined;
   const { chapters, error } = useChapters(module ? module.chapterNums : []);
   const { state } = useProgress();
 
-  const topics = useMemo(() => (module ? moduleTopics(meta, module) : []), [module]);
+  const topics = useMemo(
+    () => (module ? moduleTopics(meta, module, ns) : []),
+    [module, ns],
+  );
 
   // First topic that is not closed yet — the «continue where you left off» target.
   const activeIdx = topics.findIndex((t) => !state.units[t.key]);
@@ -29,7 +33,7 @@ export function ModulePage() {
         status="404"
         title="Модуль не найден"
         extra={
-          <Link to="/modules">
+          <Link to={href('/modules')}>
             <Button type="primary">К списку модулей</Button>
           </Link>
         }
@@ -43,7 +47,7 @@ export function ModulePage() {
   // /modules/:id → the active topic; invalid index → the active topic as well.
   const rawUnit = params.unit === undefined ? undefined : Number(params.unit);
   if (rawUnit === undefined || !Number.isInteger(rawUnit) || rawUnit < 0 || rawUnit >= topics.length) {
-    return <Navigate replace to={`/modules/${id}/${fallback}`} />;
+    return <Navigate replace to={href(`/modules/${id}/${fallback}`)} />;
   }
 
   const index = rawUnit;
@@ -59,12 +63,12 @@ export function ModulePage() {
       .map((t) => ({ value: t.index, label: t.title })),
   }));
 
-  const goTo = (i: number) => navigate(`/modules/${id}/${i}`);
+  const goTo = (i: number) => navigate(href(`/modules/${id}/${i}`));
 
   return (
     <Space orientation="vertical" size={16} style={{ width: '100%' }}>
       <div className="page-head">
-        <Link to="/modules" className="muted">
+        <Link to={href('/modules')} className="muted">
           <ArrowLeftOutlined /> Модули
         </Link>
         <Typography.Title level={3} style={{ margin: '8px 0' }}>

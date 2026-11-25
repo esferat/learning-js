@@ -2,6 +2,7 @@ import { Checkbox } from 'antd';
 import type { Block, Unit } from '../types';
 import { unitKey } from '../progress/stats';
 import { useProgress } from '../progress/ProgressContext';
+import { useProgram } from '../ProgramContext';
 import { BlockList } from './BlockList';
 
 export interface Segment {
@@ -57,7 +58,8 @@ function UnitBody({
   showPreamble: boolean;
 }) {
   const { isDone, toggle } = useProgress();
-  const key = unitKey(chapterNum, segment.unit.i);
+  const { ns } = useProgram();
+  const key = unitKey(ns, chapterNum, segment.unit.i);
   const checked = isDone('units', key);
   const isSub = segment.blocks[0].t === 'h3';
   const Heading = isSub ? 'h3' : 'h2';
